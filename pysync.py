@@ -1,17 +1,43 @@
+# -*- coding: utf-8 -*-
+import sys
+import os
+import os.path
 
+def listup(srcRoot, destRoot, oldRoot, relativePath):
 
+    srcPath = os.path.join(srcRoot, relativePath)
+    destPath = os.path.join(destRoot, relativePath)
 
-using
-namespace
-System;
+#    System::String ^ srcPath = System::IO::Path::Combine(srcRoot, relativePath);
 
-void
-listup(System::String ^ srcRoot, System::String ^ destRoot, System::String ^ oldRoot, System::String ^ relativePath){
+#    array < System::String ^ > ^ srcDirItems = System::IO::Directory::GetDirectories(srcPath);
+    items =  os.listdir(srcPath)
+    dir_list=[]
+    symlink_list=[]
+    file_list=[]
+    for item in items:
+        item_path = os.path.join(srcPath, item)
+        if os.path.isdir(item_path):
+            dir_list.append(item)
+        elif os.path.islink(item_path):
+            symlink_list.append(item)
+        elif os.path.isfile(item_path):
+            file_list.append(item)
+#    print dir_list
+#    print file_list
 
-    System::String ^ srcPath = System::IO::Path::Combine(srcRoot, relativePath);
+    for directory in dir_list:
+        src_dir = os.path.join(srcPath, directory)
+        dest_dir = os.path.join(destPath, directory)
 
-    array < System::String ^ > ^ srcDirItems = System::IO::Directory::GetDirectories(srcPath);
+        print src_dir
+        print u"->"+dest_dir
 
+        # exception?
+        os.makedirs(dest_dir)
+
+        listup(srcRoot, destRoot, oldRoot, os.path.join(relativePath, directory))
+"""
     for (int i = 0; i < srcDirItems->Length; i++){
 
         System::String ^ srcItem = srcDirItems[i];
@@ -138,27 +164,17 @@ listup(System::String ^ srcRoot, System::String ^ destRoot, System::String ^ old
         }
 
     }
+"""
+
+
+if __name__ == "__main__":
+    srcRoot = sys.argv[1]  # バックアップ元
+
+    destRoot = sys.argv[2] # バックアップ先
+
+    oldRoot = "" # バックアップ（ふるいの）
 
 
 
-int main(array < System::String ^ > ^ args)
+    listup(srcRoot, destRoot, oldRoot, u"")
 
-{
-
-    System::String ^ srcRoot = L"P:\\Project\\XTestAlvin\\assets\\chars\\GL"; // バックアップ元
-
-    System::String ^ oldRoot = L"P:\\Project\\XTestAlvin\\assets\\chars\\GL6"; // バックアップ（ふるいの）
-
-    System::String ^ destRoot = L"P:\\Project\\XTestAlvin\\assets\\chars\\GL7"; // バックアップ先
-
-    listup(srcRoot, destRoot, oldRoot, L"");
-
-
-
-    Console::WriteLine(L"Hello World");
-
-    ::getc(stdin);
-
-    return 0;
-
-}
